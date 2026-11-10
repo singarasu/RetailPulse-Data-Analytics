@@ -116,3 +116,35 @@ missing_products = products[products.isnull().any(axis=1)]
 
 print(f"Products with missing information: {len(missing_products)}")
 print(missing_products.isnull().sum())
+
+products = pd.read_csv(data_path / "olist_products_dataset.csv")
+
+missing_category = products[
+    products["product_category_name"].isnull()
+]
+
+missing_physical_data = products[
+    products["product_weight_g"].isnull()
+]
+
+print("\nPRODUCT DATA INVESTIGATION")
+
+print(f"Products without category: {len(missing_category)}")
+print(f"Products without physical data: {len(missing_physical_data)}")
+
+print("\nSample products without category:")
+print(
+    missing_category[
+        ["product_id", "product_category_name",
+         "product_name_lenght", "product_description_lenght",
+         "product_photos_qty"]
+    ].head(10).to_string(index=False)
+)
+
+print("\nProducts without physical data:")
+print(
+    missing_physical_data[
+        ["product_id", "product_weight_g", "product_length_cm",
+         "product_height_cm", "product_width_cm"]
+    ].to_string(index=False)
+)
