@@ -91,3 +91,28 @@ for file_name in datasets_to_check:
     missing_counts = df.isnull().sum()
 
     print(missing_counts[missing_counts > 0])
+
+    orders = pd.read_csv(data_path / "olist_orders_dataset.csv")
+
+print("\nORDER STATUS VS MISSING DELIVERY DATES")
+
+for column in [
+    "order_approved_at",
+    "order_delivered_carrier_date",
+    "order_delivered_customer_date"
+]:
+    print(f"\nMissing {column}:")
+    print(
+        orders[orders[column].isnull()]
+        ["order_status"]
+        .value_counts(dropna=False)
+    )
+
+products = pd.read_csv(data_path / "olist_products_dataset.csv")
+
+print("\nPRODUCT MISSING VALUE PATTERNS")
+
+missing_products = products[products.isnull().any(axis=1)]
+
+print(f"Products with missing information: {len(missing_products)}")
+print(missing_products.isnull().sum())
