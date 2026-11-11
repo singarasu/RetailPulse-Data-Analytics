@@ -238,3 +238,26 @@ for parent_name, parent_col, parent_df, child_name, child_col, child_df in relat
     print(f"\n{parent_name} -> {child_name}")
     print(f"Unmatched rows: {unmatched_rows}")
     print(f"Unique unmatched values: {unmatched_values}")
+
+    items = pd.read_csv(data_path / "olist_order_items_dataset.csv")
+payments = pd.read_csv(data_path / "olist_order_payments_dataset.csv")
+reviews = pd.read_csv(data_path / "olist_order_reviews_dataset.csv")
+
+print("\nDATA VALIDITY ANALYSIS")
+
+invalid_review_scores = reviews[
+    (reviews["review_score"] < 1) |
+    (reviews["review_score"] > 5)
+]
+
+negative_prices = items[items["price"] < 0]
+negative_freight = items[items["freight_value"] < 0]
+
+negative_payments = payments[payments["payment_value"] < 0]
+invalid_installments = payments[payments["payment_installments"] < 1]
+
+print(f"Invalid review scores: {len(invalid_review_scores)}")
+print(f"Negative product prices: {len(negative_prices)}")
+print(f"Negative freight values: {len(negative_freight)}")
+print(f"Negative payment values: {len(negative_payments)}")
+print(f"Invalid payment installments: {len(invalid_installments)}")
