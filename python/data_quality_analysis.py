@@ -148,3 +148,63 @@ print(
          "product_height_cm", "product_width_cm"]
     ].to_string(index=False)
 )
+
+products = pd.read_csv(data_path / "olist_products_dataset.csv")
+
+missing_category_ids = set(
+    products.loc[
+        products["product_category_name"].isnull(),
+        "product_id"
+    ]
+)
+
+missing_physical_ids = set(
+    products.loc[
+        products["product_weight_g"].isnull(),
+        "product_id"
+    ]
+)
+
+overlapping_products = missing_category_ids.intersection(
+    missing_physical_ids
+)
+
+print("\nPRODUCT MISSING VALUE OVERLAP")
+print(f"Products missing category information: {len(missing_category_ids)}")
+print(f"Products missing physical information: {len(missing_physical_ids)}")
+print(f"Products missing both: {len(overlapping_products)}")
+print(f"Total unique affected products: {len(missing_category_ids.union(missing_physical_ids))}")
+
+reviews = pd.read_csv(data_path / "olist_order_reviews_dataset.csv")
+
+duplicate_review_ids = reviews[
+    reviews.duplicated(subset=["review_id"], keep=False)
+]
+
+duplicate_order_ids = reviews.duplicated(
+    subset=["order_id"]
+).sum()
+
+duplicate_combinations = reviews.duplicated(
+    subset=["review_id", "order_id"]
+).sum()
+
+review_analysis = duplicate_review_ids.groupby("review_id").agg(
+    total_rows=("order_id", "size"),
+    unique_orders=("order_id", "nunique"),
+    unique_scores=("review_score", "nunique"),
+    unique_messages=("review_comment_message", "nunique")
+)
+
+different_scores = (review_analysis["unique_scores"] > 1).sum()
+different_messages = (review_analysis["unique_messages"] > 1).sum()
+
+print("\nREVIEW PRIMARY KEY VALIDATION")
+print(f"Duplicate order IDs: {duplicate_order_ids}")
+print(f"Duplicate review-order combinations: {duplicate_combinations}")
+print(f"Review IDs appearing multiple times: {len(review_analysis)}")
+print(f"Review IDs with different scores: {different_scores}")
+print(f"Review IDs with different messages: {different_messages}")
+
+print("\nSAMPLE REVIEW ID ANALYSIS")
+print(review_analysis.head(10))
