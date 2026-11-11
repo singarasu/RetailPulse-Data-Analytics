@@ -208,3 +208,33 @@ print(f"Review IDs with different messages: {different_messages}")
 
 print("\nSAMPLE REVIEW ID ANALYSIS")
 print(review_analysis.head(10))
+
+customers = pd.read_csv(data_path / "olist_customers_dataset.csv")
+orders = pd.read_csv(data_path / "olist_orders_dataset.csv")
+order_items = pd.read_csv(data_path / "olist_order_items_dataset.csv")
+products = pd.read_csv(data_path / "olist_products_dataset.csv")
+sellers = pd.read_csv(data_path / "olist_sellers_dataset.csv")
+payments = pd.read_csv(data_path / "olist_order_payments_dataset.csv")
+reviews = pd.read_csv(data_path / "olist_order_reviews_dataset.csv")
+
+relationships = [
+    ("customers", "customer_id", customers, "orders", "customer_id", orders),
+    ("orders", "order_id", orders, "order_items", "order_id", order_items),
+    ("products", "product_id", products, "order_items", "product_id", order_items),
+    ("sellers", "seller_id", sellers, "order_items", "seller_id", order_items),
+    ("orders", "order_id", orders, "payments", "order_id", payments),
+    ("orders", "order_id", orders, "reviews", "order_id", reviews)
+]
+
+print("\nREFERENTIAL INTEGRITY ANALYSIS")
+
+for parent_name, parent_col, parent_df, child_name, child_col, child_df in relationships:
+
+    unmatched = ~child_df[child_col].isin(parent_df[parent_col])
+
+    unmatched_rows = unmatched.sum()
+    unmatched_values = child_df.loc[unmatched, child_col].nunique()
+
+    print(f"\n{parent_name} -> {child_name}")
+    print(f"Unmatched rows: {unmatched_rows}")
+    print(f"Unique unmatched values: {unmatched_values}")
