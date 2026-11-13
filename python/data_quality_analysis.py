@@ -261,3 +261,20 @@ print(f"Negative product prices: {len(negative_prices)}")
 print(f"Negative freight values: {len(negative_freight)}")
 print(f"Negative payment values: {len(negative_payments)}")
 print(f"Invalid payment installments: {len(invalid_installments)}")
+
+print("\nINVALID PAYMENT INSTALLMENT DETAILS")
+
+print(
+    invalid_installments[
+        [
+            "order_id",
+            "payment_sequential",
+            "payment_type",
+            "payment_installments",
+            "payment_value"
+        ]
+    ]
+)
+
+print("\nPAYMENT INSTALLMENT VALUE COUNTS")
+print(payments["payment_installments"].value_counts().sort_index())
