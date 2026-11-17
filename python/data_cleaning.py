@@ -48,3 +48,26 @@ print(
         ]
     ].apply(lambda group: group.isnull().sum())
 )
+
+print("\nORDER STATUS ANALYSIS")
+print(orders["order_status"].value_counts())
+
+print("\nMissing Delivery Dates by Order Status")
+
+missing_by_status = orders.groupby("order_status")[
+    [
+        "order_approved_at",
+        "order_delivered_carrier_date",
+        "order_delivered_customer_date"
+    ]
+].apply(lambda group: group.isnull().sum())
+
+print(missing_by_status.to_string())
+
+delivered_orders = orders[orders["order_status"] == "delivered"]
+
+print("Delivered Orders:", len(delivered_orders))
+print(
+    "Missing Customer Delivery Date:",
+    delivered_orders["order_delivered_customer_date"].isnull().sum()
+)
