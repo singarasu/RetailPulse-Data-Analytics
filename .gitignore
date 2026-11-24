@@ -218,3 +218,8 @@ __marimo__/
 .streamlit/secrets.toml
 # RetailPulse raw dataset
 data/raw/
+# RetailPulse processed datasets
+data/processed/
+
+# RetailPulse processed datasets
+data/processed/
