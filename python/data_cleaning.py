@@ -134,3 +134,41 @@ print(
         keep=False
     )].head(10).to_string()
 )
+
+zip_analysis = geo.groupby("geolocation_zip_code_prefix").agg(
+    total_records=("geolocation_zip_code_prefix", "count"),
+    unique_latitudes=("geolocation_lat", "nunique"),
+    unique_longitudes=("geolocation_lng", "nunique")
+)
+
+print("\nZIP CODE COORDINATE ANALYSIS")
+
+print("ZIP Codes with Multiple Latitudes:",
+      (zip_analysis["unique_latitudes"] > 1).sum())
+
+print("ZIP Codes with Multiple Longitudes:",
+      (zip_analysis["unique_longitudes"] > 1).sum())
+
+print("\nSample ZIP Analysis:")
+print(zip_analysis.head(10).to_string())
+
+geo_cleaned = geo.drop_duplicates()
+
+print("\nGEOLOCATION DUPLICATE CHECK")
+
+print("Original Rows:", len(geo))
+print("Rows After Removing Exact Duplicates:", len(geo_cleaned))
+print("Rows Removed:", len(geo) - len(geo_cleaned))
+
+print("\nRemaining Duplicate Rows:", geo_cleaned.duplicated().sum())
+
+processed_path = Path("data/processed")
+processed_path.mkdir(parents=True, exist_ok=True)
+
+geo_cleaned.to_csv(
+    processed_path / "geolocation_cleaned.csv",
+    index=False
+)
+
+print("\nCleaned geolocation dataset saved successfully.")
+print("Saved Rows:", len(geo_cleaned))
